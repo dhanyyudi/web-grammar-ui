@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   grammar-web:
     container_name: grammar-web-ui
