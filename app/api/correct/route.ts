@@ -44,17 +44,27 @@ export async function POST(request: NextRequest) {
 
       // Parse the result to extract corrected text and changes
       const result = data.result || '';
-      const lines = result.split('\n');
 
       let corrected = '';
       let changes = '';
 
-      for (const line of lines) {
-        if (line.startsWith('CORRECTED:')) {
-          corrected = line.replace('CORRECTED:', '').trim();
-        } else if (line.startsWith('CHANGES:')) {
-          changes = line.replace('CHANGES:', '').trim();
+      // Use regex to reliably extract CORRECTED and CHANGES parts
+      if (result.includes('CORRECTED:') && result.includes('CHANGES:')) {
+        // Extract CORRECTED part (everything between CORRECTED: and CHANGES:)
+        const correctedMatch = result.match(/CORRECTED:\s*([\s\S]*?)(?=CHANGES:|$)/i);
+        if (correctedMatch) {
+          corrected = correctedMatch[1].trim();
         }
+
+        // Extract CHANGES part (everything after CHANGES:)
+        const changesMatch = result.match(/CHANGES:\s*([\s\S]*?)$/i);
+        if (changesMatch) {
+          changes = changesMatch[1].trim();
+        }
+      } else {
+        // Fallback: treat entire result as corrected text
+        corrected = result.trim();
+        changes = 'Unable to parse changes';
       }
 
       return NextResponse.json({

@@ -8,9 +8,12 @@ interface ResultCardProps {
 }
 
 export default function ResultCard({ result }: ResultCardProps) {
-  const hasChanges = result.changes.toLowerCase() !== 'none' &&
-                     result.changes.toLowerCase() !== 'no changes detected' &&
-                     result.original !== result.corrected;
+  // Check if there are actual changes (not "None" or similar)
+  const changesLower = result.changes.toLowerCase();
+  const isNoChanges = changesLower === 'none' ||
+                      changesLower.includes('no changes') ||
+                      changesLower.includes('already correct');
+  const hasChanges = !isNoChanges && result.original !== result.corrected;
 
   return (
     <div className="space-y-4 animate-in fade-in duration-300">
