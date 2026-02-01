@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  grammar-web:
+    container_name: grammar-web-ui
+    build: .
+    restart: unless-stopped
+
+    # [STRICT] No port exposure - NPM handles routing
+    # ports:
+    #   - "3000:3000"
+
+    environment:
+      - NODE_ENV=production
+      - N8N_WEBHOOK_URL=${N8N_WEBHOOK_URL}
+
+    networks:
+      - private_network
+
+networks:
+  private_network:
+    external: true
